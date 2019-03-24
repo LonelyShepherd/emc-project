@@ -1,4 +1,4 @@
-package mk.finki.ukim.emt.lab.persistance;
+package mk.finki.ukim.emt.lab.persistence;
 
 import mk.finki.ukim.emt.lab.models.entities.User;
 import mk.finki.ukim.emt.lab.models.entities.VerificationToken;

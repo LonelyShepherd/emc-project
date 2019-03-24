@@ -1,7 +1,6 @@
 package mk.finki.ukim.emt.lab.service;
 
 import mk.finki.ukim.emt.lab.models.entities.User;
-import mk.finki.ukim.emt.lab.persistance.IVerificationTokenRepository;
 import mk.finki.ukim.emt.lab.service.interfaces.IEmailService;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,11 +10,9 @@ import javax.mail.internet.MimeMessage;
 
 @Service
 public class EmailService implements IEmailService {
-    private final IVerificationTokenRepository _verificationTokenRepository;
     private final JavaMailSender _sender;
 
-    public EmailService(IVerificationTokenRepository verificationTokenRepository, JavaMailSender sender) {
-        _verificationTokenRepository = verificationTokenRepository;
+    public EmailService(JavaMailSender sender) {
         _sender = sender;
     }
 

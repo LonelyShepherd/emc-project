@@ -2,7 +2,7 @@ package mk.finki.ukim.emt.lab.service;
 
 import mk.finki.ukim.emt.lab.models.entities.User;
 import mk.finki.ukim.emt.lab.models.entities.VerificationToken;
-import mk.finki.ukim.emt.lab.persistance.IVerificationTokenRepository;
+import mk.finki.ukim.emt.lab.persistence.IVerificationTokenRepository;
 import mk.finki.ukim.emt.lab.service.interfaces.IVerificationTokenService;
 import org.springframework.stereotype.Service;
 
