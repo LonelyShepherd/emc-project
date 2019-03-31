@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Activate</title>
+    <style>
+        .register-form {
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .register-form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        input {
+            padding: 7.5px 5px;
+        }
+
+        button {
+            padding: 7.5px 0;
+        }
+
+        button, input {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .success, .error {
+            margin-top: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<form class="register-form" method="post">
+    <h1>Activate your account</h1>
+    <div>
+        <input type="text" name="token">
+    </div>
+    <button type="submit">Activate</button>
+</form>
+</body>
+</html>

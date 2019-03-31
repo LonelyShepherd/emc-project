@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <style>
+        .register-form {
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .register-form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        input {
+            padding: 7.5px 5px;
+        }
+
+        button {
+            padding: 7.5px 0;
+        }
+
+        button, input {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .success, .error {
+            margin-top: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<form action="/login" class="register-form" method="post">
+    <h1>Login</h1>
+    <div>
+        <label>Email</label>
+        <input type="email" name="username">
+    </div>
+    <div>
+        <label>Password</label>
+        <input type="password" name="password">
+    </div>
+    <div>
+        <label>
+            <input type="checkbox" style="width: auto" name="remember-me">
+            Remember me
+        </label>
+    </div>
+    <button type="submit">Login</button>
+    <div th:text="${error}" class="error"></div>
+</form>
+</body>
+</html>

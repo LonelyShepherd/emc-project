@@ -2,29 +2,44 @@ package mk.finki.ukim.emt.lab.service;
 
 import mk.finki.ukim.emt.lab.models.entities.User;
 import mk.finki.ukim.emt.lab.models.entities.VerificationToken;
-import mk.finki.ukim.emt.lab.persistence.IUsersRepository;
+import mk.finki.ukim.emt.lab.persistence.IUserRepository;
 import mk.finki.ukim.emt.lab.service.interfaces.IEmailService;
-import mk.finki.ukim.emt.lab.service.interfaces.IUsersService;
+import mk.finki.ukim.emt.lab.service.interfaces.IUserService;
 import mk.finki.ukim.emt.lab.service.interfaces.IVerificationTokenService;
+import mk.finki.ukim.emt.lab.service.results.PasswordResult;
 import mk.finki.ukim.emt.lab.service.results.UserResult;
 import mk.finki.ukim.emt.lab.viewModels.RegisterViewModel;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-
 @Service
-public class UsersService implements IUsersService {
-    private final IUsersRepository _usersRepository;
+public class UserService implements IUserService {
     private final IEmailService _emailService;
+    private final PasswordEncoder _passwordEncoder;
+    private final IUserRepository _usersRepository;
     private final IVerificationTokenService _verificationTokenService;
 
-    public UsersService(
-        IUsersRepository usersRepository,
+    public UserService(
         IEmailService emailService,
+        PasswordEncoder passwordEncoder,
+        IUserRepository usersRepository,
         IVerificationTokenService verificationTokenService) {
-        _usersRepository = usersRepository;
         _emailService = emailService;
+        _passwordEncoder = passwordEncoder;
+        _usersRepository = usersRepository;
         _verificationTokenService = verificationTokenService;
+    }
+
+    @Override
+    public User update(User user) {
+        return _usersRepository.save(user);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return _usersRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
@@ -49,11 +64,21 @@ public class UsersService implements IUsersService {
     }
 
     @Override
-    public Collection<User> listAll() {
-        return _usersRepository.findAll();
+    public PasswordResult changePassword(User user, String currentPassword, String newPassword, String confirmNewPassword) {
+        if (!_passwordEncoder.matches(currentPassword, user.password))
+            return PasswordResult.failed("Wrong password");
+
+        if (!newPassword.equals(confirmNewPassword))
+            return PasswordResult.failed("New passwords does not match");
+
+        user.password = _passwordEncoder.encode(newPassword);
+
+        User updated = update(user);
+
+        return updated != null ? PasswordResult.failed("Password updated successfully") : PasswordResult.failed("Couldn't update password");
     }
 
-    private void sendVerificationEmail(User user) throws Exception {
+    private void sendVerificationEmail(User user) {
         VerificationToken token = _verificationTokenService.generate(user);
 
         try {

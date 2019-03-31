@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Activation</title>
+    <style>
+
+        button {
+            padding: 7.5px 0;
+        }
+
+        button {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .success, .error {
+            margin-top: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body style="width: fit-content; margin: 100px auto">
+    <div style="width: 300px; margin: 0 auto;">
+        <h2 class="success" th:text="${success}"></h2>
+        <h2 class="error" th:text="${error}"></h2>
+        <a th:href="${link}" th:text="${button}" style="margin:0 auto; width: 150px; display:block;"></a>
+    </div>
+</body>
+</html>

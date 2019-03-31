@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Account</title>
+    <style>
+        .register-form {
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .register-form div {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        input {
+            padding: 7.5px 5px;
+        }
+
+        button {
+            padding: 7.5px 0;
+        }
+
+        button, input {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .success, .error {
+            margin-top: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div th:text="${user.firstName}"></div>
+        <a href="/logout">Log out</a>
+    </div>
+<div style="margin-top: 30px">
+    <form method="post" class="register-form">
+        <div>
+            <label>First name</label>
+            <input type="text" name="firstName" th:value="${user.firstName}"/>
+        </div>
+        <div>
+            <label>Last name</label>
+            <input type="text" name="lastName" th:value="${user.lastName}"/>
+        </div>
+        <div>
+            <label>Email</label>
+            <input type="text" name="email" th:value="${user.email}"/>
+        </div>
+        <div>
+            <button type="submit">Save</button>
+            <div class="success" th:text="${success}"></div>
+            <div class="error" th:text="${error}"></div>
+        </div>
+    </form>
+    <form class="register-form" method="post" action="/account/change-password">
+        <div>
+            <input type="password" name="currentPassword"/>
+        </div>
+        <div>
+            <input type="password" name="newPassword"/>
+        </div>
+        <div>
+            <input type="password" name="confirmNewPassword"/>
+        </div>
+        <div>
+            <button type="submit">Change</button>
+            <div class="success" th:text="${passwordSuccess}"></div>
+            <div class="error" th:text="${passwordError}"></div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
