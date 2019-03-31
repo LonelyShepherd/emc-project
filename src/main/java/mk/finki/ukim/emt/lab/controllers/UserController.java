@@ -1,5 +1,6 @@
 package mk.finki.ukim.emt.lab.controllers;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import mk.finki.ukim.emt.lab.service.interfaces.IUserService;
 import mk.finki.ukim.emt.lab.service.interfaces.IVerificationService;
 import mk.finki.ukim.emt.lab.service.results.UserResult;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(WebRequest request, Model model, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String email, @RequestParam String password, @RequestParam String confirmPassword) throws Exception {
+    public String register(Model model, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String email, @RequestParam String password, @RequestParam String confirmPassword) throws Exception {
         RegisterViewModel user = new RegisterViewModel();
 
         user.firstName = firstName;
@@ -57,6 +58,23 @@ public class UserController {
             model.addAttribute("error", "Bad credentials");
 
         return "login";
+    }
+
+    @GetMapping("/forgot-password")
+    public String forgotPassword() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(Model model, @RequestParam String email) {
+        UserResult result = _userService.generatePassword(email);
+
+        if (result.isSuccessful())
+            model.addAttribute("success", result.getMessage());
+        else
+            model.addAttribute("error", result.getMessage());
+
+        return "forgot-password";
     }
 
     @GetMapping("/activate")

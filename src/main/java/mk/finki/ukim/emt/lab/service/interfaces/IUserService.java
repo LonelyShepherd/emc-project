@@ -8,6 +8,7 @@ import mk.finki.ukim.emt.lab.viewModels.RegisterViewModel;
 public interface IUserService {
     User update(User user);
     User findByEmail(String email);
-    UserResult create(RegisterViewModel user) throws Exception;
+    UserResult create(RegisterViewModel user);
+    UserResult generatePassword(String email);
     PasswordResult changePassword(User user, String currentPassword, String newPassword, String confirmNewPassword);
 }

@@ -17,20 +17,14 @@ public class EmailService implements IEmailService {
     }
 
     @Override
-    public void send(User user, String verificationToken) throws Exception {
-        MimeMessage message = _sender.createMimeMessage();
-        MimeMessageHelper messageHelper = new MimeMessageHelper(message);
+    public void send(User user, String subject, String message) throws Exception {
+        MimeMessage mimeMessage = _sender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
 
         messageHelper.setTo(user.email);
-        messageHelper.setSubject("Account Activation");
-        messageHelper.setText(
-            "<p>We are so glad that you are joining us!<br />" +
-            "Your verification token is: " + verificationToken + "<br />" +
-            "Please click on the following link to finish your registration:<br />" +
-            "<a href=\"http://localhost:8080/activate/" + verificationToken + "\">" + "http://localhost:8080/activate/" + verificationToken + "</a><br />" +
-            "or visit <a href=\"http://localhost:8080/activate\">http://localhost:8080/activate</a> and enter your verification code.</p>"
-        , true);
+        messageHelper.setSubject(subject);
+        messageHelper.setText(message, true);
 
-        _sender.send(message);
+        _sender.send(mimeMessage);
     }
 }

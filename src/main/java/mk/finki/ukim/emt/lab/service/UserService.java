@@ -1,7 +1,6 @@
 package mk.finki.ukim.emt.lab.service;
 
 import mk.finki.ukim.emt.lab.models.entities.User;
-import mk.finki.ukim.emt.lab.models.entities.VerificationToken;
 import mk.finki.ukim.emt.lab.persistence.IUserRepository;
 import mk.finki.ukim.emt.lab.service.interfaces.IEmailService;
 import mk.finki.ukim.emt.lab.service.interfaces.IUserService;
@@ -11,6 +10,8 @@ import mk.finki.ukim.emt.lab.service.results.UserResult;
 import mk.finki.ukim.emt.lab.viewModels.RegisterViewModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserService implements IUserService {
@@ -39,28 +40,68 @@ public class UserService implements IUserService {
     public User findByEmail(String email) {
         return _usersRepository
                 .findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElse(null);
     }
 
     @Override
-    public UserResult create(RegisterViewModel user) throws Exception {
-        if (user.firstName == "" || user.lastName == "" || user.email == "" || user.password == "" || user.confirmPassword == "")
+    public UserResult generatePassword(String email) {
+        if (email == "")
+            return UserResult.failed("The email field is required");
+
+        User user = findByEmail(email);
+        String password = UUID.randomUUID().toString().replace("-", "");
+
+        if (user != null) {
+            user.password = password;
+
+            User updated = update(user);
+
+            if (updated != null) {
+                try {
+                    _emailService.send(user, "Password Reset", "<p>Your new password is: <b>" + password + "</b>");
+                } catch (Exception e) {
+                    return UserResult.failed("The email failed to be sent");
+                }
+
+                return UserResult.success("An email with the new password has been sent to your email address");
+            }
+
+            return UserResult.failed("We couldn't send you the new password for your account, please try again");
+        }
+
+        return UserResult.failed("There is not user with that email address");
+    }
+
+    @Override
+    public UserResult create(RegisterViewModel model) {
+        if (model.firstName == "" || model.lastName == "" || model.email == "" || model.password == "" || model.confirmPassword == "")
             return  UserResult.failed("All fields are required");
 
-        if (!user.password.equals(user.confirmPassword))
+        if (!model.password.equals(model.confirmPassword))
             return UserResult.failed("The passwords does not match");
 
-        User u = new User();
+        User user = new User();
 
-        u.firstName = user.firstName;
-        u.lastName = user.lastName;
-        u.email = user.email;
-        u.password = user.password;
-        u.activated = false;
+        user.firstName = model.firstName;
+        user.lastName = model.lastName;
+        user.email = model.email;
+        user.password = model.password;
+        user.activated = false;
 
-        sendVerificationEmail(_usersRepository.save(u));
+        String token = _verificationTokenService.generate(user).token;
 
-        return UserResult.success("Authentication token has been sent to your mail address");
+        try {
+            _emailService.send(user, "Account Activation",
+                    "<p>We are so glad that you are joining us!<br />" +
+                            "Your verification token is: " + token + "<br />" +
+                            "Please click on the following link to finish your registration:<br />" +
+                            "<a href=\"http://localhost:8080/activate/" + token + "\">" + "http://localhost:8080/activate/" + token + "</a><br />" +
+                            "or visit <a href=\"http://localhost:8080/activate\">http://localhost:8080/activate</a> and enter your verification code.</p>");
+        } catch (Exception e) {
+            return UserResult.failed("Verification token could not be sent");
+        }
+
+        return UserResult.success("Verification token has been sent to your mail address");
     }
 
     @Override
@@ -75,16 +116,6 @@ public class UserService implements IUserService {
 
         User updated = update(user);
 
-        return updated != null ? PasswordResult.failed("Password updated successfully") : PasswordResult.failed("Couldn't update password");
-    }
-
-    private void sendVerificationEmail(User user) {
-        VerificationToken token = _verificationTokenService.generate(user);
-
-        try {
-            _emailService.send(token.user, token.token);
-        } catch (Exception e) {
-            throw new RuntimeException("Verification token could not be sent");
-        }
+        return updated != null ? PasswordResult.success("Password updated successfully") : PasswordResult.failed("Couldn't update password");
     }
 }
