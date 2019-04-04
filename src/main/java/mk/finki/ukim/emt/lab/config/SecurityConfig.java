@@ -37,12 +37,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         httpSecurity
                 .authorizeRequests()
-                .antMatchers("/user/*")
+                .antMatchers("/account/**")
                 .authenticated()
                 .anyRequest()
                 .permitAll()
                 .and()
                 .formLogin()
+                .defaultSuccessUrl("/account", true)
                 .loginPage("/login")
                 .permitAll()
                 .and()

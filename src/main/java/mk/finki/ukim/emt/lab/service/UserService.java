@@ -17,7 +17,7 @@ import java.util.UUID;
 public class UserService implements IUserService {
     private final IEmailService _emailService;
     private final PasswordEncoder _passwordEncoder;
-    private final IUserRepository _usersRepository;
+    private final IUserRepository _userRepository;
     private final IVerificationTokenService _verificationTokenService;
 
     public UserService(
@@ -27,18 +27,18 @@ public class UserService implements IUserService {
         IVerificationTokenService verificationTokenService) {
         _emailService = emailService;
         _passwordEncoder = passwordEncoder;
-        _usersRepository = usersRepository;
+        _userRepository = usersRepository;
         _verificationTokenService = verificationTokenService;
     }
 
     @Override
     public User update(User user) {
-        return _usersRepository.save(user);
+        return _userRepository.save(user);
     }
 
     @Override
     public User findByEmail(String email) {
-        return _usersRepository
+        return _userRepository
                 .findByEmail(email)
                 .orElse(null);
     }
@@ -52,7 +52,7 @@ public class UserService implements IUserService {
         String password = UUID.randomUUID().toString().replace("-", "");
 
         if (user != null) {
-            user.password = password;
+            user.password = _passwordEncoder.encode(password);
 
             User updated = update(user);
 
@@ -85,8 +85,10 @@ public class UserService implements IUserService {
         user.firstName = model.firstName;
         user.lastName = model.lastName;
         user.email = model.email;
-        user.password = model.password;
+        user.password = _passwordEncoder.encode(model.password);
         user.activated = false;
+        
+        user = _userRepository.save(user);
 
         String token = _verificationTokenService.generate(user).token;
 
