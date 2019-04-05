@@ -6,9 +6,10 @@ import mk.finki.ukim.emt.lab.service.results.UserResult;
 import mk.finki.ukim.emt.lab.viewModels.RegisterViewModel;
 
 public interface IUserService {
-    User update(User user);
     User findByEmail(String email);
-    UserResult create(RegisterViewModel user);
     UserResult generatePassword(String email);
+    UserResult register(RegisterViewModel user);
+    User updatePassword(User user, String password);
+    User updateUserInfo(User user, String firstName, String lastName, String email);
     PasswordResult changePassword(User user, String currentPassword, String newPassword, String confirmNewPassword);
 }

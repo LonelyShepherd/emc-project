@@ -32,7 +32,11 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User update(User user) {
+    public User updateUserInfo(User user, String firstName, String lastName, String email) {
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.email = email;
+
         return _userRepository.save(user);
     }
 
@@ -51,31 +55,35 @@ public class UserService implements IUserService {
         User user = findByEmail(email);
         String password = UUID.randomUUID().toString().replace("-", "");
 
-        if (user != null) {
-            user.password = _passwordEncoder.encode(password);
+        if (user == null)
+            return UserResult.failed("There is not user with that email address");
 
-            User updated = update(user);
+        User updated = updatePassword(user, password);
 
-            if (updated != null) {
-                try {
-                    _emailService.send(user, "Password Reset", "<p>Your new password is: <b>" + password + "</b>");
-                } catch (Exception e) {
-                    return UserResult.failed("The email failed to be sent");
-                }
-
-                return UserResult.success("An email with the new password has been sent to your email address");
+        if (updated != null) {
+            try {
+                _emailService.send(user, "Password Reset", "<p>Your new password is: <b>" + password + "</b>");
+            } catch (Exception e) {
+                return UserResult.failed("The email failed to be sent");
             }
 
-            return UserResult.failed("We couldn't send you the new password for your account, please try again");
+            return UserResult.success("An email with the new password has been sent to your email address");
         }
 
-        return UserResult.failed("There is not user with that email address");
+        return UserResult.failed("We couldn't send you the new password for your account, please try again");
     }
 
     @Override
-    public UserResult create(RegisterViewModel model) {
+    public User updatePassword(User user, String password) {
+        user.password = _passwordEncoder.encode(password);
+
+        return _userRepository.save(user);
+    }
+
+    @Override
+    public UserResult register(RegisterViewModel model) {
         if (model.firstName == "" || model.lastName == "" || model.email == "" || model.password == "" || model.confirmPassword == "")
-            return  UserResult.failed("All fields are required");
+            return UserResult.failed("All fields are required");
 
         if (!model.password.equals(model.confirmPassword))
             return UserResult.failed("The passwords does not match");
@@ -114,9 +122,7 @@ public class UserService implements IUserService {
         if (!newPassword.equals(confirmNewPassword))
             return PasswordResult.failed("New passwords does not match");
 
-        user.password = _passwordEncoder.encode(newPassword);
-
-        User updated = update(user);
+        User updated = updatePassword(user, newPassword);
 
         return updated != null ? PasswordResult.success("Password updated successfully") : PasswordResult.failed("Couldn't update password");
     }

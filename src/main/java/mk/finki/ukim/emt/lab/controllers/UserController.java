@@ -38,7 +38,7 @@ public class UserController {
         user.password = password;
         user.confirmPassword = confirmPassword;
 
-        UserResult result =  _userService.create(user);
+        UserResult result =  _userService.register(user);
 
         model.addAttribute("user", new RegisterViewModel());
 

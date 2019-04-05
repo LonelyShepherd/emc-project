@@ -34,18 +34,18 @@ public class AccountController {
     public String updateAccount(Model model, Principal principal, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
         User user = _userService.findByEmail(principal.getName());
 
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.email = email;
-
-        User updated = _userService.update(user);
-
-        if (user != null) {
-            model.addAttribute("user", updated);
-            model.addAttribute("success", "Your changes has been saved");
-        } else {
+        if (user == null) {
             model.addAttribute("user", user);
             model.addAttribute("error", "Something went wrong");
+
+            return "account";
+        }
+
+        User updated = _userService.updateUserInfo(user, firstName, lastName, email);
+
+        if (updated != null) {
+            model.addAttribute("user", updated);
+            model.addAttribute("success", "Your changes has been saved");
         }
 
         return "account";
