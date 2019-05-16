@@ -1,5 +1,6 @@
 package mk.finki.ukim.emt.lab.service;
 
+import mk.finki.ukim.emt.lab.consts.Role;
 import mk.finki.ukim.emt.lab.models.entities.User;
 import mk.finki.ukim.emt.lab.persistence.IUserRepository;
 import mk.finki.ukim.emt.lab.service.interfaces.IEmailService;
@@ -11,7 +12,10 @@ import mk.finki.ukim.emt.lab.viewModels.RegisterViewModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements IUserService {
@@ -38,6 +42,21 @@ public class UserService implements IUserService {
         user.email = email;
 
         return _userRepository.save(user);
+    }
+
+    @Override
+    public List<User> listAll() {
+        return _userRepository.findAll();
+    }
+
+    @Override
+    public User findById(int id) {
+        return _userRepository.findById(id).orElseGet(null);
+    }
+
+    @Override
+    public void deleteById(int id) {
+        _userRepository.deleteById(id);
     }
 
     @Override
@@ -125,5 +144,15 @@ public class UserService implements IUserService {
         User updated = updatePassword(user, newPassword);
 
         return updated != null ? PasswordResult.success("Password updated successfully") : PasswordResult.failed("Couldn't update password");
+    }
+
+    @Override
+    public List<User> findByRole(Role role) {
+        return find(u -> u.role == role);
+    }
+
+    @Override
+    public List<User> find(Predicate<User> predicate) {
+        return _userRepository.findAll().stream().filter(predicate).collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ package mk.finki.ukim.emt.lab.service;
 
 import mk.finki.ukim.emt.lab.models.SecurityUser;
 import mk.finki.ukim.emt.lab.persistence.IUserRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

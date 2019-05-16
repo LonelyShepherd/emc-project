@@ -15,7 +15,7 @@ import java.security.Principal;
 
 @Controller
 @RequestMapping("/account")
-@PreAuthorize("hasAnyRole('USER')")
+@PreAuthorize("hasAnyRole('User, Employee, Manager, Admin')")
 public class AccountController {
     private final IUserService _userService;
 

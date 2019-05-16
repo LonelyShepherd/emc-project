@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Forgot Password</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+</head>
+<body>
+    <h1>Manage employees</h1>
+    <form th:if="${canEdit}" method="post" action="http://localhost:8080/employee/manage/edit">
+        <div th:if="${user != null}" th:text="${user.firstName}"></div>
+        <input type="hidden" name="id" th:value="${user != null ? user.id : ''}">
+        <input type="text" name="role" th:value="${user != null ? user.role : ''}">
+        <input type="text" name="department" th:value="${user != null && user.department != null ? user.department.name : ''}">
+        <button type="submit">Edit</button>
+    </form>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.firstName}"></td>
+                <td th:text="${user.lastName}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.role}"></td>
+                <td th:text="${user.department != null ? user.department.name : ''}"></td>
+                <td>
+                    <form th:if="${canEdit}" action="http://localhost:8080/employee/manage" method="get">
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <button type="submit">Edit</button>
+                    </form>
+                    <form action="http://localhost:8080/employee/manage" method="post">
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+    <script type="text/javascript">
+        $('#table').DataTable();
+    </script>
+</body>
+</html>
